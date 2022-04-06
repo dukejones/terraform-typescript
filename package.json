@@ -13,6 +13,7 @@
     "diff": "cdktf diff",
     "output": "cdktf output --outputs-file tmp/stack-output.json",
     "writeHosts": "ts-node ./scripts/writeHosts.ts",
+    "ansible": "ansible-playbook -i hosts playbook.yml",
     "compile": "tsc --pretty",
     "watch": "tsc -w",
     "test": "jest",

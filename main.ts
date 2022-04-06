@@ -3,7 +3,6 @@ import { App, TerraformStack, TerraformOutput } from "cdktf";
 import { AwsProvider, ec2, vpc } from "@cdktf/provider-aws";
 import { readFileSync, writeFileSync } from "fs";
 
-
 class MyStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -53,6 +52,7 @@ class MyStack extends TerraformStack {
       instanceType: "t3.micro",
       tags: {
         Name: "Manager",
+        Access: "open",
       },
       keyName: keypair.keyName,
       vpcSecurityGroupIds: [securityGroup.id],
@@ -70,6 +70,7 @@ class MyStack extends TerraformStack {
           instanceType: "t3.micro",
           tags: {
             Name: `Worker ${i}`,
+            Access: "open",
           },
           keyName: keypair.keyName,
           vpcSecurityGroupIds: [securityGroup.id],

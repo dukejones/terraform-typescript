@@ -1,5 +1,6 @@
 ---
-  - name: Init Swarm Master
+  # Thanks to https://medium.com/hackernoon/setup-docker-swarm-on-aws-using-ansible-terraform-daa1eabbc27d
+  - name: Init Swarm Manager
     hosts: managers
     gather_facts: False
     remote_user: ubuntu
@@ -17,12 +18,12 @@
       - name: Show Worker Token
         debug: var=worker_token.stdout
 
-      - name: Master Token
+      - name: Manager Token
         command: docker swarm join-token manager -q
-        register: master_token
+        register: manager_token
 
-      - name: Show Master Token
-        debug: var=master_token.stdout
+      - name: Show Manager Token
+        debug: var=manager_token.stdout
 
   - name: Join Swarm Cluster
     hosts: workers
@@ -30,11 +31,11 @@
     gather_facts: False
     vars:
       token: "{{ hostvars[groups['managers'][0]]['worker_token']['stdout'] }}"
-      master: "{{ hostvars[groups['managers'][0]]['inventory_hostname'] }}"
+      manager: "{{ hostvars[groups['managers'][0]]['inventory_hostname'] }}"
       ansible_host_key_checking: false
     tasks:
       - name: Join Swarm Cluster as a Worker
-        command: docker swarm join --token {{ token }} {{ master }}:2377
+        command: docker swarm join --token {{ token }} {{ manager }}:2377
         register: worker
 
       - name: Show Results
