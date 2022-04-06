@@ -1,0 +1,40 @@
+{
+  "name": "cdktf",
+  "version": "1.0.0",
+  "main": "main.js",
+  "types": "main.ts",
+  "license": "MPL-2.0",
+  "private": true,
+  "scripts": {
+    "get": "cdktf get",
+    "build": "tsc",
+    "synth": "cdktf synth",
+    "deploy": "cdktf deploy",
+    "diff": "cdktf diff",
+    "output": "cdktf output --outputs-file tmp/stack-output.json",
+    "writeHosts": "ts-node ./scripts/writeHosts.ts",
+    "compile": "tsc --pretty",
+    "watch": "tsc -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "upgrade": "yarn upgrade cdktf@latest cdktf-cli@latest",
+    "upgrade:next": "yarn upgrade cdktf@next cdktf-cli@next"
+  },
+  "engines": {
+    "node": ">=14.0"
+  },
+  "dependencies": {
+    "@cdktf/provider-aws": "^7.0.7",
+    "cdktf": "^0.10.1",
+    "cdktf-cli": "^0.10.1",
+    "constructs": "^10.0.107"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.23",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  }
+}
