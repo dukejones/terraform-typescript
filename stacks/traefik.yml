@@ -11,7 +11,7 @@ services:
       - --api.insecure
       - --providers.docker.swarmmode
       - --providers.docker.exposedbydefault=false
-      # - --providers.docker.endpoint=tcp://socket-proxy:2375
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
       - --providers.docker.network=core
       - --accesslog
       - --log
@@ -23,9 +23,7 @@ services:
       - "8080:8080"
     networks:
       - core
-      # - cloud-socket-proxy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - cloud-socket-proxy
  
     deploy:
       mode: global
@@ -41,6 +39,7 @@ services:
       restart_policy:
         condition: on-failure          
 
+  # TODO: Traefik config to fwd authenticated TCP traffic for CI/CD
   socket-proxy:
     image: tecnativa/docker-socket-proxy
     volumes:
@@ -54,6 +53,12 @@ services:
       cloud-socket-proxy:
         aliases:
           - socket-proxy
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+
 networks:
   core:
     external: true
