@@ -21,6 +21,11 @@ export class SwarmTest extends TerraformStack {
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBeN9WjVKaH2osrHU9LlPuVU1pI4nbPOvTVhCkZK5OK9",
     });
 
+    // TODO: Route docker swarm traffic over private network
+    // TODO: Open UDP ports are required
+    // TCP port 2377 for cluster management communications
+    // TCP and UDP port 7946 for communication among nodes
+    // UDP port 4789 for overlay network traffic
     const securityGroup = new vpc.SecurityGroup(this, "default", {
       egress: [
         {

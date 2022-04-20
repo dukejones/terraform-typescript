@@ -13,7 +13,8 @@ function genStack(StackClass: typeof TerraformStack, stackName: string) {
     bucket: "resource-terraform",
     key: `terraform.${stackName}.tfstate`,
     region: "us-east-2",
-    dynamodbTable: "terraform-lock",
+    encrypt: true,
+    dynamodbTable: "terraform-state",
   });
 }
 

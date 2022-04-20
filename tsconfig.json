@@ -24,5 +24,9 @@
     "incremental": true
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "cdktf.out"]
+  "exclude": ["node_modules", "cdktf.out"],
+  "ts-node": {
+    "transpileOnly": true,
+    "transpiler": "ts-node/transpilers/swc"
+  }
 }

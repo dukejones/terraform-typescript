@@ -1,6 +1,5 @@
 import { writeFileSync } from "fs";
-import { open } from "fs/promises";
-// const stackData = require("../cdktf.out/stacks/aws_instance/cdk.tf.json");
+const [stackName] = process.argv.slice(2);
 const stackData = require("../tmp/stack-output.json");
 
 function hostsTemplate(managers: string[], workers: string[]) {
@@ -15,14 +14,32 @@ ${managers.join("\n")}
 
 [workers]
 ${workers.join("\n")}
-  `;
+`;
 }
 
-const hostsFile = hostsTemplate(
-  [stackData.aws_instance.manager_public_ip],
-  [
-    stackData.aws_instance.worker0_public_ip,
-    stackData.aws_instance.worker1_public_ip,
-  ]
-);
+///////////////////////////
+if (!stackName) {
+  console.error("Usage: yarn write-hosts-file <stack-name>");
+  process.exit(1);
+}
+
+console.log(`Writing hosts file for ${stackName}.`);
+
+// console.log(stackData);
+
+const worker_addresses = [];
+const manager_addresses = [];
+for (let name in stackData[stackName]) {
+  if (name.match(/^manager.*_public_ip/)) {
+    manager_addresses.push(stackData[stackName][name]);
+  }
+  if (name.match(/^worker\d+_public_ip/)) {
+    worker_addresses.push(stackData[stackName][name]);
+  }
+}
+
+console.log(`Managers: ${manager_addresses.join(", ")}`);
+console.log(`Workers: ${worker_addresses.join(", ")}`);
+
+const hostsFile = hostsTemplate(manager_addresses, worker_addresses);
 writeFileSync("hosts", hostsFile);
