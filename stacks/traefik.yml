@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  traefik:
+    image: traefik:v2.6
+    command: 
+      # - --log.level=DEBUG
+      - --api
+      - --api.dashboard
+      - --api.debug
+      - --api.insecure
+      - --providers.docker.swarmmode
+      - --providers.docker.exposedbydefault=false
+      # - --providers.docker.endpoint=tcp://socket-proxy:2375
+      - --providers.docker.network=core
+      - --accesslog
+      - --log
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http3
+      - --experimental.http3
+    ports:
+      - "80:80"
+      - "8080:8080"
+    networks:
+      - core
+      # - cloud-socket-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+ 
+    deploy:
+      mode: global
+      labels:
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+        # - "traefik.docker.lbswarm=true"
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure          
+
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      CONTAINERS: 1
+      NETWORKS: 1
+      SERVICES: 1
+      TASKS: 1
+    networks:
+      cloud-socket-proxy:
+        aliases:
+          - socket-proxy
+networks:
+  core:
+    external: true
+  cloud-socket-proxy:
+    external: true
