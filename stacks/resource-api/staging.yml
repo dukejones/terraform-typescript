@@ -5,6 +5,7 @@ services:
     env_file: staging.env
     environment:
       POSTGRES: postgresql://ubuntu@172.31.11.197/dev?schema=public
+      COMMIT_SHA: $COMMIT_SHA
       # POSTGRES: postgresql://postgres:root@postgres/resource-api?schema=public
 
     networks:

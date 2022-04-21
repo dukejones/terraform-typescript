@@ -45,6 +45,8 @@ https://doc.traefik.io/traefik/user-guides/docker-compose/basic-example/
 
 docker network create --driver overlay --scope swarm --opt encrypted --attachable cloud-socket-proxy
 docker network create --driver=overlay --attachable core
+git clone git@github.com:ReSource-Network/infra-swarm.git
+docker stack deploy -c traefik.yml proxy
 
 ### Useful for debugging, access services on the network by name.
 
