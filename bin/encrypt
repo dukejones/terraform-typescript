@@ -1,0 +1,6 @@
+#!/bin/bash
+
+aws kms encrypt \
+  --key-id 'arn:aws:kms:us-east-2:446481105531:alias/deployer-secrets' \
+  --plaintext fileb://$1 --output text --query 'CiphertextBlob' | base64 --decode > $1.enc
+  

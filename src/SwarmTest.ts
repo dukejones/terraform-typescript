@@ -62,11 +62,15 @@ export class SwarmTest extends TerraformStack {
       keyName: keypair.keyName,
       vpcSecurityGroupIds: [securityGroup.id],
       userData: bootstrapScript,
+      iamInstanceProfile:
+        "arn:aws:iam::446481105531:instance-profile/SwarmNode",
     });
-    new TerraformOutput(this, "manager_public_ip", {
+    new TerraformOutput(this, "manager0_public_ip", {
       value: manager.publicIp,
     });
-
+    new TerraformOutput(this, "manager0_id", {
+      value: manager.id,
+    });
     const workers = [];
     for (let i = 0; i < 2; i++) {
       workers.push(
@@ -80,10 +84,15 @@ export class SwarmTest extends TerraformStack {
           keyName: keypair.keyName,
           vpcSecurityGroupIds: [securityGroup.id],
           userData: bootstrapScript,
+          iamInstanceProfile:
+            "arn:aws:iam::446481105531:instance-profile/SwarmNode",
         })
       );
       new TerraformOutput(this, `worker${i}_public_ip`, {
         value: workers[i].publicIp,
+      });
+      new TerraformOutput(this, `worker${i}_id`, {
+        value: workers[i].id,
       });
     }
   }

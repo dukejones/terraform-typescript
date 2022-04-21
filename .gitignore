@@ -11,3 +11,5 @@ tsconfig.tsbuildinfo
 !setup.js
 tmp
 hosts
+*.cer
+github-infra-swarm-key

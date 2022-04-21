@@ -52,14 +52,6 @@ services:
 https://docs.docker.com/compose/compose-file/compose-file-v3/#restart_policy
 https://docs.docker.com/compose/compose-file/deploy/
 
-
-  whoami:
-    image: "traefik/whoami"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`test.rsrc.co`)"
-      - "traefik.http.routers.whoami.entrypoints=web"
-
 https://doc.traefik.io/traefik/user-guides/docker-compose/basic-example/
 
 docker network create --driver overlay --scope swarm --opt encrypted --attachable cloud-socket-proxy
