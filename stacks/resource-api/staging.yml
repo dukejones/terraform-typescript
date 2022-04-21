@@ -1,7 +1,8 @@
 version: '3.9'
 services:
   resource-api:
-    image: $DOCKER_REGISTRY
+    image: $ECR_PATH
+    env_file: staging.env
     environment:
       POSTGRES: postgresql://ubuntu@172.31.11.197/dev?schema=public
       # POSTGRES: postgresql://postgres:root@postgres/resource-api?schema=public
