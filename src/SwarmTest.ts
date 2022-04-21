@@ -11,6 +11,8 @@ export class SwarmTest extends TerraformStack {
 
     const bootstrapScript = readFileSync("bootstrap.sh", "utf8");
 
+    // TODO: Copy github-infra-swarm-key onto the instance as id_ed25519 so it can pull down this repo, chmod 400
+
     new AwsProvider(this, "AWS", {
       region: "us-west-1",
     });

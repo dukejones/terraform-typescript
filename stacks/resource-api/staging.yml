@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  resource-api:
+    image: $DOCKER_REGISTRY
+    environment:
+      POSTGRES: postgresql://ubuntu@172.31.11.197/dev?schema=public
+      # POSTGRES: postgresql://postgres:root@postgres/resource-api?schema=public
+
+    networks:
+      - core
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.resource-api.rule=Host(`staging-api.rsrc.co`)"
+        - "traefik.http.routers.resource-api.entrypoints=web"
+
+  # postgres:
+  #   image: postgres:alpine
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: root
+  #     POSTGRES_DB: resource-api
+  #   networks:
+  #     - core
+
+networks:
+  core:
+    external: true
