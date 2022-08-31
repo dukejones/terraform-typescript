@@ -1,5 +1,11 @@
 version: '3.9'
 
+networks:
+  core:
+    external: true
+  cloud-socket-proxy:
+    external: true
+
 services:
   traefik:
     image: traefik:v2.6
@@ -35,7 +41,11 @@ services:
           - node.role == manager
       update_config:
         parallelism: 1
-        delay: 10s
+        delay: 60s
+        monitor: 30s
+        order: stop-first
+        failure_action: rollback
+
       restart_policy:
         condition: on-failure          
 
@@ -58,9 +68,3 @@ services:
       placement:
         constraints:
           - node.role == manager
-
-networks:
-  core:
-    external: true
-  cloud-socket-proxy:
-    external: true

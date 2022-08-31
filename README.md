@@ -58,3 +58,8 @@ TODO: import the deployer key everywhere https://aws.amazon.com/premiumsupport/k
 
 Stacks directory is named after the ECR repository. If you push to 446481105531.dkr.ecr.us-east-2.amazonaws.com/resource-api:staging, you will deploy from:
 `stacks/resource-api/staging.yml`
+
+
+# Ansible stuff
+
+ansible -i hosts -u ubuntu managers -m ansible.builtin.setup

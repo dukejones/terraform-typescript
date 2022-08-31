@@ -4,8 +4,9 @@ import { SwarmTest } from "./src/SwarmTest";
 
 const app = new App();
 
-const stateStack = new TerraformState(app, "terraform-state");
+new TerraformState(app, "terraform-state");
 
+// Generate the stack using Terraform State to keep multiple users from making changes to the same stack
 function genStack(StackClass: typeof TerraformStack, stackName: string) {
   const stack = new StackClass(app, stackName);
 

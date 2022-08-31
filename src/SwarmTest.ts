@@ -7,16 +7,18 @@ export class SwarmTest extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    const region = "us-west-1";
+    const managerInstanceType = "t3.small";
+    const workerInstanceType = "t3.small";
     const ubuntuWest1Ami = "ami-01f87c43e618bf8f0";
 
     const bootstrapScript = readFileSync("bootstrap.sh", "utf8");
 
-    // TODO: Copy github-infra-swarm-key onto the instance as id_ed25519 so it can pull down this repo, chmod 400
-
     new AwsProvider(this, "AWS", {
-      region: "us-west-1",
+      region: region,
     });
 
+    // ! Did this just get destroyed when bringing the stack down?
     const keypair = new ec2.KeyPair(this, "KeyPair", {
       keyName: "deployer-west-1",
       publicKey:
@@ -36,12 +38,24 @@ export class SwarmTest extends TerraformStack {
           protocol: "tcp",
           toPort: 65535,
         },
+        {
+          cidrBlocks: ["0.0.0.0/0"],
+          fromPort: 0,
+          protocol: "udp",
+          toPort: 65535,
+        },
       ],
       ingress: [
         {
           cidrBlocks: ["0.0.0.0/0"],
           fromPort: 0,
           protocol: "tcp",
+          toPort: 65535,
+        },
+        {
+          cidrBlocks: ["0.0.0.0/0"],
+          fromPort: 0,
+          protocol: "udp",
           toPort: 65535,
         },
         {
@@ -54,9 +68,11 @@ export class SwarmTest extends TerraformStack {
       name: "sgswarmcluster",
     });
 
+    // ? Do we need to attach a EBS volume here? For downloading docker images.
+    // Note that when we have multiple managers, explore shared network storage volume, NFS or Gluster etc.
     const manager = new ec2.Instance(this, "manager", {
       ami: ubuntuWest1Ami,
-      instanceType: "t3.micro",
+      instanceType: managerInstanceType,
       tags: {
         Name: "Swarm Manager",
         Access: "open",
@@ -64,9 +80,10 @@ export class SwarmTest extends TerraformStack {
       keyName: keypair.keyName,
       vpcSecurityGroupIds: [securityGroup.id],
       userData: bootstrapScript,
-      iamInstanceProfile:
-        "arn:aws:iam::446481105531:instance-profile/SwarmNode",
+      iamInstanceProfile: "SwarmNode",
     });
+    // TODO: Copy github-infra-swarm-key onto the instance as id_ed25519 so it can pull down this repo, chmod 400
+
     new TerraformOutput(this, "manager0_public_ip", {
       value: manager.publicIp,
     });
@@ -78,7 +95,7 @@ export class SwarmTest extends TerraformStack {
       workers.push(
         new ec2.Instance(this, `worker${i}`, {
           ami: ubuntuWest1Ami,
-          instanceType: "t3.micro",
+          instanceType: workerInstanceType,
           tags: {
             Name: `Swarm Worker ${i}`,
             Access: "open",
@@ -86,8 +103,7 @@ export class SwarmTest extends TerraformStack {
           keyName: keypair.keyName,
           vpcSecurityGroupIds: [securityGroup.id],
           userData: bootstrapScript,
-          iamInstanceProfile:
-            "arn:aws:iam::446481105531:instance-profile/SwarmNode",
+          iamInstanceProfile: "SwarmNode",
         })
       );
       new TerraformOutput(this, `worker${i}_public_ip`, {

@@ -10,6 +10,7 @@
     tasks:
       - name: Swarm Init
         command: docker swarm init --advertise-addr {{ inventory_hostname }}
+        ignore_errors: true
 
       - name: Get Worker Token
         command: docker swarm join-token worker -q
@@ -24,6 +25,37 @@
 
       - name: Show Manager Token
         debug: var=manager_token.stdout
+      
+      - name: Create core overlay network
+        command: docker network create --driver=overlay --attachable core
+        ignore_errors: true
+
+
+      - name: Create socket proxy overlay network
+        command: docker network create --driver overlay --scope swarm --opt encrypted --attachable cloud-socket-proxy
+        ignore_errors: true
+      
+      - name: Copy github key
+        copy:
+          src: ./github-infra-swarm-key
+          dest: ~/.ssh/id_ed25519
+          owner: ubuntu
+          group: ubuntu
+          mode: '0600'
+
+      - name: Check existence of git repo
+        stat:
+          path: ~/infra-swarm
+        register: git_dir
+      - name: Add github SSH key to known hosts
+        command: ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+        when: not git_dir.stat.exists
+      - name: Clone stack deployment repo 
+        command: git clone git@github.com:ReSource-Network/infra-swarm.git ~/infra-swarm
+        when: not git_dir.stat.exists
+
+      
+      # docker stack deploy -c traefik.yml proxy
 
   - name: Join Swarm Cluster
     hosts: workers
