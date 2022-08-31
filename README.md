@@ -1,4 +1,21 @@
-# Use AWS Instance Connect
+# Note to future self
+
+Don't use Docker Swarm, ever.
+Traefik also -- it's difficult to configure through docker labels alone.
+
+### The good stuff is in:
+```
+src/SwarmTest.ts
+main.ts
+```
+In package.json, tasks to take the ip addresses from the cdktf output:
+`tf-output -> write-hosts-file -> run-ansible`
+
+Explore: APISIX for reverse proxy / ingress
+
+# essentially random notes
+
+## Use AWS Instance Connect
 
 You'll have to get the instance id.
 
